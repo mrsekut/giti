@@ -1,26 +1,39 @@
 {
   "name": "@mrsekut/giti",
   "version": "0.2.1",
-  "description": "Interactive Git CLI tool",
   "author": "mrsekut",
-  "license": "MIT",
-  "type": "module",
-  "main": "dist/cli.js",
-  "bin": {
-    "giti": "dist/cli.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mrsekut/giti.git"
   },
+  "main": "dist/cli.js",
+  "dependencies": {
+    "@effect/cli": "^0.70.0",
+    "@effect/platform-bun": "^0.80.0",
+    "effect": "^3.17.14",
+    "ink": "^6.3.1",
+    "ink-select-input": "^6.2.0",
+    "react": "^19.1.1",
+    "simple-git": "^3.21.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.9.2"
+  },
+  "bin": {
+    "giti": "dist/cli.js"
+  },
+  "description": "Interactive Git CLI tool",
+  "files": [
+    "dist/**/*"
+  ],
   "keywords": [
     "git",
     "cli",
     "interactive"
   ],
-  "files": [
-    "dist/**/*"
-  ],
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
@@ -32,20 +45,5 @@
     "format": "prettier --write .",
     "check": "bun run typecheck && bun run format"
   },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/node": "^20.11.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@effect/cli": "^0.70.0",
-    "@effect/platform-bun": "^0.80.0",
-    "effect": "^3.17.14",
-    "ink": "^6.3.1",
-    "ink-select-input": "^6.2.0",
-    "react": "^19.1.1",
-    "simple-git": "^3.21.0"
-  }
+  "type": "module"
 }
