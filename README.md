@@ -1,4 +1,4 @@
-# my-git
+# giti
 
 To install dependencies:
 
