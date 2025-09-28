@@ -1,26 +1,46 @@
+import { Effect, Console } from 'effect';
 import { render } from 'ink';
-import { getCommits } from '../git.js';
+import { getCommits, type GitCommit, GitError } from '../git.js';
 import { CommitList } from '../CommitList.js';
-import type { GitCommit } from '../git.js';
 import simpleGit from 'simple-git';
 
 type Options = {
   number: string;
 };
 
-const git = simpleGit();
+export const rebaseCommand = (options: Options) =>
+  Effect.gen(function* () {
+    const limit = parseInt(options.number, 10);
 
-export async function rebaseCommand(options: Options) {
-  const limit = parseInt(options.number, 10);
-
-  try {
-    const commits = await getCommits(limit);
+    const commits = yield* getCommits(limit);
 
     if (commits.length === 0) {
-      console.log('No commits found');
+      yield* Console.log('No commits found');
       return;
     }
 
+    const selectedCommit = yield* renderCommitSelection(commits);
+
+    if (selectedCommit) {
+      yield* performInteractiveRebase(selectedCommit);
+    } else {
+      yield* Console.log('No commit selected');
+    }
+  }).pipe(
+    Effect.catchAll((error: GitError) =>
+      Effect.gen(function* () {
+        yield* Console.error(`❌ Error: ${error.message}`);
+        yield* Effect.fail(error);
+      }),
+    ),
+  );
+
+const git = simpleGit();
+
+const renderCommitSelection = (
+  commits: readonly GitCommit[],
+): Effect.Effect<GitCommit | null, never> =>
+  Effect.async<GitCommit | null, never>(resume => {
     let selectedCommit: GitCommit | null = null;
 
     const handleSelect = (commit: GitCommit) => {
@@ -29,34 +49,32 @@ export async function rebaseCommand(options: Options) {
 
     const { waitUntilExit } = render(
       <CommitList
-        commits={commits}
+        commits={[...commits]}
         onSelect={handleSelect}
         multiSelect={false}
       />,
     );
 
-    await waitUntilExit();
+    waitUntilExit().then(() => {
+      resume(Effect.succeed(selectedCommit));
+    });
+  });
 
-    if (selectedCommit) {
-      console.log(
-        `🔄 Starting interactive rebase from ${selectedCommit.hash.substring(0, 7)}...`,
-      );
+const performInteractiveRebase = (commit: GitCommit) =>
+  Effect.gen(function* () {
+    yield* Console.log(
+      `🔄 Starting interactive rebase from ${commit.hash.substring(0, 7)}...`,
+    );
 
-      try {
-        // git rebase -i <commit>^ を実行（選択したコミットの親から開始）
-        await git.raw(['rebase', '-i', `${selectedCommit.hash}^`]);
-        console.log(
-          `✅ Interactive rebase started from ${selectedCommit.hash.substring(0, 7)}`,
-        );
-      } catch (error) {
-        console.error(`❌ Failed to start rebase: ${error}`);
-        process.exit(1);
-      }
-    } else {
-      console.log('No commit selected');
-    }
-  } catch (error) {
-    console.error(`❌ Error: ${error}`);
-    process.exit(1);
-  }
-}
+    yield* Effect.tryPromise({
+      try: async () => {
+        await git.raw(['rebase', '-i', `${commit.hash}^`]);
+      },
+      catch: error =>
+        new GitError({ message: `Failed to start rebase: ${error}` }),
+    });
+
+    yield* Console.log(
+      `✅ Interactive rebase started from ${commit.hash.substring(0, 7)}`,
+    );
+  });

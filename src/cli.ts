@@ -1,24 +1,26 @@
-import { Command } from '@effect/cli';
+import { Command, Options } from '@effect/cli';
 import { BunContext, BunRuntime } from '@effect/platform-bun';
 import { Console, Effect } from 'effect';
-import { cherryCommand } from './commands/cherry';
-import { rebaseCommand } from './commands/rebase';
+import { cherryCommand } from './commands/cherry.js';
+import { rebaseCommand } from './commands/rebase.js';
 
-const giti = Command.make('giti', {}, () => Console.log('Hello World'));
+const numberOption = Options.text('number').pipe(
+  Options.withAlias('n'),
+  Options.withDefault('30'),
+  Options.withDescription('Number of commits to show'),
+);
 
-const cherry = Command.make('cherry-pick', {}, () => {
-  return Effect.gen(function* () {
-    cherryCommand({ number: '30' });
-    yield* Console.log(`Running 'giti cherry'`);
-  });
-});
+const giti = Command.make('giti', {}, () => Console.log('Git Interactive CLI'));
 
-const rebase = Command.make('rebase', {}, () => {
-  return Effect.gen(function* () {
-    rebaseCommand({ number: '30' });
-    yield* Console.log(`Running 'giti rebase'`);
-  });
-});
+const cherry = Command.make(
+  'cherry-pick',
+  { number: numberOption },
+  ({ number }) => cherryCommand({ number }),
+);
+
+const rebase = Command.make('rebase', { number: numberOption }, ({ number }) =>
+  rebaseCommand({ number }),
+);
 
 const command = giti.pipe(Command.withSubcommands([cherry, rebase]));
 

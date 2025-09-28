@@ -1,3 +1,4 @@
+import { Effect, Data } from 'effect';
 import simpleGit, { type LogResult } from 'simple-git';
 
 export type GitCommit = {
@@ -10,38 +11,51 @@ export type GitCommit = {
 
 const git = simpleGit();
 
-export async function getCommits(limit: number = 30): Promise<GitCommit[]> {
-  try {
-    const log: LogResult = await git.log(['-n', String(limit)]);
+export class GitError extends Data.TaggedError('GitError')<{
+  message: string;
+}> {}
 
-    return log.all.map(commit => ({
-      hash: commit.hash,
-      date: commit.date,
-      message: commit.message,
-      author_name: commit.author_name,
-      author_email: commit.author_email,
-    }));
-  } catch (error) {
-    throw new Error(`Failed to get commits: ${error}`);
-  }
-}
+export const getCommits = (
+  limit: number = 30,
+): Effect.Effect<GitCommit[], GitError> =>
+  Effect.tryPromise({
+    try: async () => {
+      const log: LogResult = await git.log(['-n', String(limit)]);
 
-export async function cherryPick(commitHash: string): Promise<void> {
-  try {
-    await git.raw(['cherry-pick', commitHash]);
-  } catch (error) {
-    throw new Error(`Failed to cherry-pick commit ${commitHash}: ${error}`);
-  }
-}
+      return log.all.map(commit => ({
+        hash: commit.hash,
+        date: commit.date,
+        message: commit.message,
+        author_name: commit.author_name,
+        author_email: commit.author_email,
+      }));
+    },
+    catch: error =>
+      new GitError({ message: `Failed to get commits: ${error}` }),
+  });
 
-export async function createFixupCommit(commitHash: string): Promise<void> {
-  try {
-    await git.commit(`fixup! ${commitHash}`, undefined, {
-      '--fixup': commitHash,
-    });
-  } catch (error) {
-    throw new Error(
-      `Failed to create fixup commit for ${commitHash}: ${error}`,
-    );
-  }
-}
+export const cherryPick = (commitHash: string): Effect.Effect<void, GitError> =>
+  Effect.tryPromise({
+    try: async () => {
+      await git.raw(['cherry-pick', commitHash]);
+    },
+    catch: error =>
+      new GitError({
+        message: `Failed to cherry-pick commit ${commitHash}: ${error}`,
+      }),
+  });
+
+export const createFixupCommit = (
+  commitHash: string,
+): Effect.Effect<void, GitError> =>
+  Effect.tryPromise({
+    try: async () => {
+      await git.commit(`fixup! ${commitHash}`, undefined, {
+        '--fixup': commitHash,
+      });
+    },
+    catch: error =>
+      new GitError({
+        message: `Failed to create fixup commit for ${commitHash}: ${error}`,
+      }),
+  });
