@@ -25,9 +25,9 @@
     "@effect/cli": "^0.70.0",
     "@effect/platform-bun": "^0.80.0",
     "effect": "^3.17.14",
-    "ink": "^4.4.1",
-    "ink-select-input": "^5.0.0",
-    "react": "^18.2.0",
+    "ink": "^6.3.1",
+    "ink-select-input": "^6.2.0",
+    "react": "^19.1.1",
     "simple-git": "^3.21.0"
   }
 }
