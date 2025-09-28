@@ -1,5 +1,5 @@
 {
-  "name": "giti",
+  "name": "@mrsekut/giti",
   "version": "0.1.0",
   "description": "Interactive Git CLI tool",
   "author": "mrsekut",
@@ -21,6 +21,9 @@
   "files": [
     "dist/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "bun run src/cli.ts",
     "build": "bun build ./src/cli.ts --outdir ./dist --target node",
