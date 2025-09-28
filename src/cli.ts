@@ -1,26 +1,30 @@
-#!/usr/bin/env bun
-import { Command } from 'commander';
-import packageJson from '../package.json';
-import { cherryCommand } from './commands/cherry.js';
-import { rebaseCommand } from './commands/rebase.js';
+import { Command } from '@effect/cli';
+import { BunContext, BunRuntime } from '@effect/platform-bun';
+import { Console, Effect } from 'effect';
+import { cherryCommand } from './commands/cherry';
+import { rebaseCommand } from './commands/rebase';
 
-const program = new Command();
+const giti = Command.make('giti', {}, () => Console.log('Hello World'));
 
-program
-  .name('giti')
-  .description('Interactive Git CLI for easy commit selection')
-  .version(packageJson.version || '0.1.0');
+const cherry = Command.make('cherry-pick', {}, () => {
+  return Effect.gen(function* () {
+    cherryCommand({ number: '30' });
+    yield* Console.log(`Running 'giti cherry'`);
+  });
+});
 
-program
-  .command('cherry')
-  .description('Cherry-pick commits interactively')
-  .option('-n, --number <number>', 'Number of commits to show', '30')
-  .action(cherryCommand);
+const rebase = Command.make('rebase', {}, () => {
+  return Effect.gen(function* () {
+    rebaseCommand({ number: '30' });
+    yield* Console.log(`Running 'giti rebase'`);
+  });
+});
 
-program
-  .command('rebase')
-  .description('Interactive rebase with commit selection')
-  .option('-n, --number <number>', 'Number of commits to show', '30')
-  .action(rebaseCommand);
+const command = giti.pipe(Command.withSubcommands([cherry, rebase]));
 
-program.parse();
+const cli = Command.run(command, {
+  name: 'giti',
+  version: 'v1.0.0',
+});
+
+cli(process.argv).pipe(Effect.provide(BunContext.layer), BunRuntime.runMain);
