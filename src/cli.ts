@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import packageJson from '../package.json';
 import { cherryCommand } from './commands/cherry.js';
+import { rebaseCommand } from './commands/rebase.js';
 
 const program = new Command();
 
@@ -17,22 +18,9 @@ program
   .action(cherryCommand);
 
 program
-  .command('fixup')
-  .description('Create fixup commits interactively')
-  .option('-n, --number <number>', 'Number of commits to show', '30')
-  .option('--autosquash', 'Enable autosquash for rebase')
-  .action(async options => {
-    console.log('Fixup command - coming soon!');
-    console.log('Options:', options);
-  });
-
-program
   .command('rebase')
   .description('Interactive rebase with commit selection')
   .option('-n, --number <number>', 'Number of commits to show', '30')
-  .action(async options => {
-    console.log('Rebase command - coming soon!');
-    console.log('Options:', options);
-  });
+  .action(rebaseCommand);
 
 program.parse();

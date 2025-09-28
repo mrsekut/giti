@@ -12,7 +12,7 @@ const git = simpleGit();
 
 export async function getCommits(limit: number = 30): Promise<GitCommit[]> {
   try {
-    const log: LogResult = await git.log(['--oneline', '-n', String(limit)]);
+    const log: LogResult = await git.log(['-n', String(limit)]);
 
     return log.all.map(commit => ({
       hash: commit.hash,
