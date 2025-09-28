@@ -3,15 +3,9 @@ import { render } from 'ink';
 import { getCommits, cherryPick, type GitCommit, GitError } from '../git.js';
 import { CommitList } from '../CommitList.js';
 
-type Options = {
-  number: string;
-};
-
-export const cherryCommand = (options: Options) =>
+export const cherryCommand = () =>
   Effect.gen(function* () {
-    const limit = parseInt(options.number, 10);
-
-    const commits = yield* getCommits(limit);
+    const commits = yield* getCommits();
 
     if (commits.length === 0) {
       yield* Console.log('No commits found');

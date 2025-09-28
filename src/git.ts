@@ -16,11 +16,12 @@ export class GitError extends Data.TaggedError('GitError')<{
 }> {}
 
 export const getCommits = (
-  limit: number = 30,
+  limit?: number,
 ): Effect.Effect<GitCommit[], GitError> =>
   Effect.tryPromise({
     try: async () => {
-      const log: LogResult = await git.log(['-n', String(limit)]);
+      const args = limit ? ['-n', String(limit)] : ['--all'];
+      const log: LogResult = await git.log(args);
 
       return log.all.map(commit => ({
         hash: commit.hash,

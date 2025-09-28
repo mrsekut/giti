@@ -4,15 +4,9 @@ import { getCommits, type GitCommit, GitError } from '../git.js';
 import { CommitList } from '../CommitList.js';
 import simpleGit from 'simple-git';
 
-type Options = {
-  number: string;
-};
-
-export const rebaseCommand = (options: Options) =>
+export const rebaseCommand = () =>
   Effect.gen(function* () {
-    const limit = parseInt(options.number, 10);
-
-    const commits = yield* getCommits(limit);
+    const commits = yield* getCommits();
 
     if (commits.length === 0) {
       yield* Console.log('No commits found');
