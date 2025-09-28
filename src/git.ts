@@ -1,5 +1,5 @@
 import { Effect, Data } from 'effect';
-import simpleGit, { type LogResult } from 'simple-git';
+import simpleGit from 'simple-git';
 
 export type GitCommit = {
   hash: string;
@@ -15,13 +15,10 @@ export class GitError extends Data.TaggedError('GitError')<{
   message: string;
 }> {}
 
-export const getCommits = (
-  limit?: number,
-): Effect.Effect<GitCommit[], GitError> =>
+export const getCommits = (): Effect.Effect<GitCommit[], GitError> =>
   Effect.tryPromise({
     try: async () => {
-      const args = limit ? ['-n', String(limit)] : ['--all'];
-      const log: LogResult = await git.log(args);
+      const log = await git.log(['--all']);
 
       return log.all.map(commit => ({
         hash: commit.hash,
@@ -43,20 +40,5 @@ export const cherryPick = (commitHash: string): Effect.Effect<void, GitError> =>
     catch: error =>
       new GitError({
         message: `Failed to cherry-pick commit ${commitHash}: ${error}`,
-      }),
-  });
-
-export const createFixupCommit = (
-  commitHash: string,
-): Effect.Effect<void, GitError> =>
-  Effect.tryPromise({
-    try: async () => {
-      await git.commit(`fixup! ${commitHash}`, undefined, {
-        '--fixup': commitHash,
-      });
-    },
-    catch: error =>
-      new GitError({
-        message: `Failed to create fixup commit for ${commitHash}: ${error}`,
       }),
   });

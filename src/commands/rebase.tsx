@@ -7,14 +7,12 @@ import simpleGit from 'simple-git';
 export const rebaseCommand = () =>
   Effect.gen(function* () {
     const commits = yield* getCommits();
-
     if (commits.length === 0) {
       yield* Console.log('No commits found');
       return;
     }
 
     const selectedCommit = yield* renderCommitSelection(commits);
-
     if (selectedCommit) {
       yield* performInteractiveRebase(selectedCommit);
     } else {
@@ -28,8 +26,6 @@ export const rebaseCommand = () =>
       }),
     ),
   );
-
-const git = simpleGit();
 
 const renderCommitSelection = (
   commits: readonly GitCommit[],
@@ -54,6 +50,7 @@ const renderCommitSelection = (
     });
   });
 
+const git = simpleGit();
 const performInteractiveRebase = (commit: GitCommit) =>
   Effect.gen(function* () {
     yield* Console.log(
