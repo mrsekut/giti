@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, Box, useInput, useApp } from 'ink';
-import type { GitCommit } from '../lib/git.js';
+import type { GitCommit } from './git.js';
 
 type Props = {
   commits: GitCommit[];

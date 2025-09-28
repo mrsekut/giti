@@ -1,7 +1,7 @@
 import { render } from 'ink';
-import { getCommits } from '../lib/git.js';
-import { CommitList } from '../components/CommitList.js';
-import type { GitCommit } from '../lib/git.js';
+import { getCommits } from '../git.js';
+import { CommitList } from '../CommitList.js';
+import type { GitCommit } from '../git.js';
 import simpleGit from 'simple-git';
 
 type Options = {
@@ -38,12 +38,16 @@ export async function rebaseCommand(options: Options) {
     await waitUntilExit();
 
     if (selectedCommit) {
-      console.log(`🔄 Starting interactive rebase from ${selectedCommit.hash.substring(0, 7)}...`);
+      console.log(
+        `🔄 Starting interactive rebase from ${selectedCommit.hash.substring(0, 7)}...`,
+      );
 
       try {
         // git rebase -i <commit>^ を実行（選択したコミットの親から開始）
         await git.raw(['rebase', '-i', `${selectedCommit.hash}^`]);
-        console.log(`✅ Interactive rebase started from ${selectedCommit.hash.substring(0, 7)}`);
+        console.log(
+          `✅ Interactive rebase started from ${selectedCommit.hash.substring(0, 7)}`,
+        );
       } catch (error) {
         console.error(`❌ Failed to start rebase: ${error}`);
         process.exit(1);

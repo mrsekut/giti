@@ -1,7 +1,7 @@
 import { render } from 'ink';
-import { getCommits, cherryPick } from '../lib/git.js';
-import { CommitList } from '../components/CommitList.js';
-import type { GitCommit } from '../lib/git.js';
+import { getCommits, cherryPick } from '../git.js';
+import { CommitList } from '../CommitList.js';
+import type { GitCommit } from '../git.js';
 
 type Options = {
   number: string;
