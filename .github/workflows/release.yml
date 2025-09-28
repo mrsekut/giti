@@ -1,0 +1,27 @@
+name: npm publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: 24
+      - uses: oven-sh/setup-bun
+      - run: bun install --frozen-lockfile
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
