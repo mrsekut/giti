@@ -1,13 +1,31 @@
 {
-  "name": "my-git",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest",
-    "prettier": "^3.6.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+	"name": "giti",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"bin": {
+		"giti": "./dist/cli.js"
+	},
+	"scripts": {
+		"dev": "bun run src/cli.ts",
+		"build": "bun build ./src/cli.ts --outdir ./dist --target node",
+		"typecheck": "tsc --noEmit",
+		"format": "prettier --write .",
+		"test": "vitest",
+		"check": "bun run typecheck && bun run format && bun run test"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/node": "^20.11.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"commander": "^11.1.0",
+		"ink": "^4.4.1",
+		"ink-select-input": "^5.0.0",
+		"react": "^18.2.0",
+		"simple-git": "^3.21.0"
+	}
 }
