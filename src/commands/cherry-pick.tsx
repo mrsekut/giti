@@ -3,23 +3,21 @@ import { render } from 'ink';
 import { getCommits, cherryPick, type GitCommit, GitError } from '../git.js';
 import { CommitList } from '../CommitList.js';
 
-export const cherryCommand = () =>
+export const cherryPickCommand = () =>
   Effect.gen(function* () {
     const commits = yield* getCommits();
-
     if (commits.length === 0) {
       yield* Console.log('No commits found');
       return;
     }
 
     const selectedCommits = yield* renderCommitSelection(commits);
-
     if (selectedCommits.length === 0) {
       yield* Console.log('No commits selected');
       return;
     }
 
-    yield* Effect.forEach(selectedCommits, cherryPickCommit, {
+    yield* Effect.forEach(selectedCommits, runCherryPick, {
       concurrency: 1,
       discard: true,
     });
@@ -32,9 +30,7 @@ export const cherryCommand = () =>
     ),
   );
 
-const renderCommitSelection = (
-  commits: readonly GitCommit[],
-): Effect.Effect<readonly GitCommit[], never> =>
+const renderCommitSelection = (commits: readonly GitCommit[]) =>
   Effect.async<readonly GitCommit[], never>(resume => {
     const selectedCommits: GitCommit[] = [];
 
@@ -55,7 +51,7 @@ const renderCommitSelection = (
     });
   });
 
-const cherryPickCommit = (commit: GitCommit) =>
+const runCherryPick = (commit: GitCommit) =>
   pipe(
     cherryPick(commit.hash),
     Effect.tap(() =>

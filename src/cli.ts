@@ -1,12 +1,12 @@
 import { Command } from '@effect/cli';
 import { BunContext, BunRuntime } from '@effect/platform-bun';
 import { Console, Effect } from 'effect';
-import { cherryCommand } from './commands/cherry.js';
+import { cherryPickCommand } from './commands/cherry-pick.js';
 import { rebaseCommand } from './commands/rebase.js';
 
 const giti = Command.make('giti', {}, () => Console.log('Git Interactive CLI'));
 
-const cherry = Command.make('cherry-pick', {}, () => cherryCommand());
+const cherry = Command.make('cherry-pick', {}, () => cherryPickCommand());
 const rebase = Command.make('rebase', {}, () => rebaseCommand());
 
 const command = giti.pipe(Command.withSubcommands([cherry, rebase]));
