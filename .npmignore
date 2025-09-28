@@ -1,0 +1,37 @@
+# Development files
+.claude/
+.cursor/
+.vscode/
+.github/
+.git/
+
+# Source files (only dist is needed)
+src/
+*.ts
+!*.d.ts
+
+# Config files
+.gitignore
+.prettierrc.mjs
+.mcp.json
+tsconfig.json
+bun.lockb
+CLAUDE.md
+
+# Test files
+*.test.*
+*.spec.*
+__tests__/
+
+# Build artifacts
+*.log
+.DS_Store
+node_modules/
+coverage/
+.env*
+
+# IDE files
+*.swp
+*.swo
+*~
+.idea/

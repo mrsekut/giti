@@ -1,12 +1,26 @@
 {
   "name": "giti",
-  "module": "index.ts",
   "version": "0.1.0",
+  "description": "Interactive Git CLI tool",
+  "author": "mrsekut",
+  "license": "MIT",
   "type": "module",
-  "private": true,
+  "main": "dist/cli.js",
   "bin": {
     "giti": "dist/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrsekut/giti.git"
+  },
+  "keywords": [
+    "git",
+    "cli",
+    "interactive"
+  ],
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "dev": "bun run src/cli.ts",
     "build": "bun build ./src/cli.ts --outdir ./dist --target node",
